@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devopstest
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nodejs
+  template:
+    metadata:
+      labels:
+        app: nodejs
+    spec:
+      containers:
+        - name: devopstest
+          image: testacrdemo.azurecr.io/node:final
+          ports:
+            - containerPort: 9002
+          env:
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nodeconfig
+                  key: APP_PORT
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: nodeconfig
+                  key: NODE_ENV
+            - name: GOOGLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nodesecret
+                  key: google-key
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
